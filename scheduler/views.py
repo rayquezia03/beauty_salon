@@ -1,5 +1,6 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
 
 
 def home(request):
@@ -69,7 +70,7 @@ all_clients_served = []
 def agendar(request):
     print(request.method)
     if request.method == 'POST':
-        nome = request.POST['nome']
+        nome = request.POST['name']
         servico = request.POST.getlist('servico')
         email = request.POST['email']
         celular = request.POST['celular']
@@ -91,24 +92,22 @@ def agendar(request):
         print('$$$$$$$$$$$$$$$$$$')
         print(queue_service.imprimir())
         
-        return render(request, 'sucess.html', {'client_name': client_name,'client_services':client_services})
-        
-        # return render(request, 'scheduler/resultado_agendamento.html', {'clientes': all_clients_served})
-        return HttpResponse('sucesso!')
+        # return render(request, 'sucess.html', {'client_name': client_name,'client_services':client_services})
+        return JsonResponse({'success': True, 'client_name': client_name, 'client_services':client_services})
     else:
         return render(request, 'scheduler.html')
 
 #GET da fila de pessoas que estão em espera
 def get_queue(request):
-  if queue_service.EstaVazia() != True:
+  # if queue_service.EstaVazia() != True:
     
-      print('!!!!!!!!!!!!!!!!!')
-      print(queue_service.EstaVazia())
-      
-      people_in_stand_by = queue_service.imprimir()
-      return render(request, "get_queue.html", {'queue': people_in_stand_by })
-  else:
-    return HttpResponse("Não há clientes na fila!")
+  print('!!!!!!!!!!!!!!!!!')
+  print(queue_service.EstaVazia())
+  
+  people_in_stand_by = queue_service.imprimir()
+  return render(request, "get_queue.html", {'queue': people_in_stand_by })
+  # else:
+  #   return HttpResponse("Não há clientes na fila!")
 
 #DELETE - concluir atendimento/remover cliente da fila
 def complete_current_customer_service(request):
@@ -117,14 +116,12 @@ def complete_current_customer_service(request):
       queue[0]['served'] = True
       current_client = queue[0]['name']
       
-      print('@@@@@@@@@@')
-      print(queue)
-      print(current_client)
-      
       queue_service.remover()
+      # return JsonResponse({'success': True, 'current_client': current_client})
       return render(request, "complete_current_customer_service.html",{'current_client': current_client})
     else:
-      return HttpResponse("Não há clientes na fila!")
+      current_client = None
+      return render(request, "complete_current_customer_service.html",{'current_client': current_client})
   
 #fornecer clientes que ja foram atendidas - "served" == True
 def get_queue_completed(request):
@@ -145,8 +142,7 @@ def get_queue_completed(request):
     
 #reseta a fila de atendimento
 def complete_workday(request):
-  all_clients_served = []
-  queue_service.resetar()
-  
-  return render(request, "complete_workday.html")
+    all_clients_served = []
+    queue_service.resetar()
+    return JsonResponse({'success': True})
   
