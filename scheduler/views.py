@@ -99,15 +99,23 @@ def agendar(request):
 
 #GET da fila de pessoas que estão em espera
 def get_queue(request):
-  # if queue_service.EstaVazia() != True:
+  if queue_service.EstaVazia() != True:
+    client_names = []
     
-  print('!!!!!!!!!!!!!!!!!')
-  print(queue_service.EstaVazia())
-  
-  people_in_stand_by = queue_service.imprimir()
-  return render(request, "get_queue.html", {'queue': people_in_stand_by })
-  # else:
-  #   return HttpResponse("Não há clientes na fila!")
+    print('!!!!!!!!!!!!!!!!!')
+    print(queue_service.EstaVazia())
+    print(queue_service.imprimir())
+    
+    people_in_stand_by = queue_service.imprimir()
+    for i in range(0,len(people_in_stand_by)):
+      name = people_in_stand_by[i]['name']
+      client_names.append(f'{i+1} - {name}')
+    print('#############')
+    print(client_names)
+    return render(request, "get_queue.html", {'people_in_stand_by': client_names })
+  else:
+    client_names = None
+    return render(request, "get_queue.html", {'people_in_stand_by': client_names })
 
 #DELETE - concluir atendimento/remover cliente da fila
 def complete_current_customer_service(request):
@@ -125,8 +133,9 @@ def complete_current_customer_service(request):
   
 #fornecer clientes que ja foram atendidas - "served" == True
 def get_queue_completed(request):
-  total_workday_clients = 0
   finished_clients = []
+  total_workday_clients = 0
+  client_names = []
   if all_clients_served != None:
     for client in all_clients_served:
       print('***********')
@@ -135,14 +144,19 @@ def get_queue_completed(request):
         finished_clients.append(client)
         total_workday_clients = total_workday_clients + 1
       
+      for i in range(0,len(finished_clients)):
+        client_names.append(finished_clients[i]['name'])
+        
       print('------')
       print(finished_clients)
-        
-  return render(request, "get_queue_completed.html",{'finished_clients': finished_clients, 'total_workday_clients':total_workday_clients})
+      
+    return render(request, "get_queue_completed.html", {'finished_clients': client_names })
+  else:
+    client_names = None
+    return render(request, "get_queue_completed.html", {'finished_clients': client_names })
     
 #reseta a fila de atendimento
 def complete_workday(request):
-    all_clients_served = []
     queue_service.resetar()
     return JsonResponse({'success': True})
   

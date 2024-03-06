@@ -10851,3 +10851,15 @@ html {
   background-color: #e6e6fa; /* Código hexadecimal para a cor lilás claro */
   color: #6a5acd; /* Cor do texto para a barra de navegação */
 }
+
+.client-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.client-list li {
+  margin-bottom: 8px;
+  background-color: #f4f4f4;
+  padding: 10px;
+  border-radius: 5px;
+}
