@@ -150,10 +150,10 @@ def get_queue_completed(request):
       print('------')
       print(finished_clients)
       
-    return render(request, "get_queue_completed.html", {'finished_clients': client_names })
-  else:
+    return render(request, "get_queue_completed.html", {'finished_clients': set(client_names) })
+  else: 
     client_names = None
-    return render(request, "get_queue_completed.html", {'finished_clients': client_names })
+    return render(request, "get_queue_completed.html", {'finished_clients': set(client_names) })
     
 #reseta a fila de atendimento
 def complete_workday(request):
